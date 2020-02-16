@@ -50,7 +50,10 @@ public class RainbowThread implements Runnable {
                             try {
                                 role.getManager().setColor(color).complete();
                             } catch (Exception ignored) {
-                                RainbowBot.getInstance().forceBuild();
+                                try {
+                                    RainbowBot.getInstance().forceBuild();
+                                } catch (Exception ignored2) {
+                                }
                             }
                         }
                     }

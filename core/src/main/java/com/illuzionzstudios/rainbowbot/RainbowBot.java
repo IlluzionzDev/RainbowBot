@@ -6,16 +6,12 @@ import com.illuzionzstudios.rainbowbot.command.RainbowCommand;
 import com.illuzionzstudios.rainbowbot.controller.RainbowController;
 import com.illuzionzstudios.rainbowbot.proxy.ProxyScraper;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
 import java.net.Proxy;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Copyright © 2020 Property of Illuzionz Studios, LLC
@@ -88,37 +84,37 @@ public class RainbowBot extends DiscordBot implements DiscordApplication {
         // Try building
         boolean retry;
         do {
-            retry = forceBuild();
+            try {
+                forceBuild();
+                retry = false;
+            } catch (Exception ex) {
+                System.out.println("Proxy timed out... connecting with new proxy");
+                retry = true;
+            }
         } while (retry);
 
         return true;
     }
 
-    public boolean forceBuild() {
+    public void forceBuild() throws Exception {
+        String ip = "";
+        int port = 0;
+
         try {
-            String ip = "";
-            int port = 0;
-
-            try {
-                List<Pair<String, Integer>> proxies = ProxyScraper.getProxies();
-                // Get first in list since we cycle them
-                ip = proxies.get(0).getLeft();
-                port = proxies.get(0).getRight();
-                ProxyScraper.useProxy(ip);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("Connecting with proxy " + ip + ":" + port);
-            final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port));
-            botBuilder.setHttpClientBuilder(new OkHttpClient.Builder().proxy(proxy));
-
-            botBuilder.build();
-            return false;
-        } catch (Exception ex) {
-            System.out.println("Proxy timed out... connecting with new proxy");
-            return true;
+            List<Pair<String, Integer>> proxies = ProxyScraper.getProxies();
+            // Get first in list since we cycle them
+            ip = proxies.get(0).getLeft();
+            port = proxies.get(0).getRight();
+            ProxyScraper.useProxy(ip);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        System.out.println("Connecting with proxy " + ip + ":" + port);
+        final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port));
+        botBuilder.setHttpClientBuilder(new OkHttpClient.Builder().proxy(proxy));
+
+        botBuilder.build();
     }
 
     @Override
