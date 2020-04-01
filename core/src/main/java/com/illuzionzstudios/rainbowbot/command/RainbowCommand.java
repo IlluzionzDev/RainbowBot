@@ -1,7 +1,6 @@
 package com.illuzionzstudios.rainbowbot.command;
 
 import com.illuzionzstudios.discordlibrary.command.type.Command;
-import com.illuzionzstudios.rainbowbot.RainbowBot;
 import com.illuzionzstudios.rainbowbot.controller.RainbowController;
 import com.illuzionzstudios.rainbowbot.embed.SetRoleEmbed;
 import net.dv8tion.jda.api.Permission;
@@ -45,11 +44,7 @@ public class RainbowCommand extends Command {
 
                 if (role != null) {
                     RainbowController.INSTANCE.getRoles().put(guild, role);
-                    try {
-                        message.getTextChannel().sendMessage(new SetRoleEmbed().createEmbed(role)).complete();
-                    } catch (Exception ignored) {
-                        // Error if proxy is slow, ignore it, gay proxies
-                    }
+                    message.getTextChannel().sendMessage(new SetRoleEmbed().createEmbed(role)).queue();
                 }
             }
         }

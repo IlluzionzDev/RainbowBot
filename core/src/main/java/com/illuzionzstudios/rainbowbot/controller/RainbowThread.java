@@ -1,11 +1,11 @@
 package com.illuzionzstudios.rainbowbot.controller;
 
-import com.illuzionzstudios.rainbowbot.RainbowBot;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.awt.*;
 import java.util.ConcurrentModificationException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Copyright © 2020 Property of Illuzionz Studios, LLC
@@ -44,17 +44,12 @@ public class RainbowThread implements Runnable {
                     if (RainbowController.INSTANCE.getRoles() == null || RainbowController.INSTANCE.getRoles().isEmpty())
                         continue;
 
+                    // Loop through all colours to set
                     for (Color color : RainbowController.INSTANCE.getRainbowColours()) {
+                        // Now through all roles to set
                         for (Role role : RainbowController.INSTANCE.getRoles().values()) {
                             // Set the colour
-                            try {
-                                role.getManager().setColor(color).complete();
-                            } catch (Exception ignored) {
-                                try {
-                                    RainbowBot.getInstance().forceBuild();
-                                } catch (Exception ignored2) {
-                                }
-                            }
+                            role.getManager().setColor(color).queueAfter(800, TimeUnit.MILLISECONDS);
                         }
                     }
 

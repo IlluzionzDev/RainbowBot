@@ -4,14 +4,17 @@ import com.illuzionzstudios.discordlibrary.DiscordApplication;
 import com.illuzionzstudios.discordlibrary.DiscordBot;
 import com.illuzionzstudios.rainbowbot.command.RainbowCommand;
 import com.illuzionzstudios.rainbowbot.controller.RainbowController;
+import com.illuzionzstudios.rainbowbot.proxy.ProxyConnector;
 import com.illuzionzstudios.rainbowbot.proxy.ProxyScraper;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 
-import java.io.IOException;
+import javax.security.auth.login.LoginException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Copyright © 2020 Property of Illuzionz Studios, LLC
@@ -81,46 +84,18 @@ public class RainbowBot extends DiscordBot implements DiscordApplication {
 
         setToken(TOKEN);
 
-        // Try building
-        boolean retry;
-        do {
-            try {
-                forceBuild();
-                retry = false;
-            } catch (Exception ex) {
-                System.out.println("Proxy timed out... connecting with new proxy");
-                retry = true;
-            }
-        } while (retry);
+        // Repeating task to connect proxies
+        new Timer().schedule(new ProxyConnector(botBuilder), 0, 5 * 60 * 1000);
 
         return true;
     }
 
-    public void forceBuild() throws Exception {
-        String ip = "";
-        int port = 0;
-
-        try {
-            List<Pair<String, Integer>> proxies = ProxyScraper.getProxies();
-            // Get first in list since we cycle them
-            ip = proxies.get(0).getLeft();
-            port = proxies.get(0).getRight();
-            ProxyScraper.useProxy(ip);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Connecting with proxy " + ip + ":" + port);
-        final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port));
-        botBuilder.setHttpClientBuilder(new OkHttpClient.Builder().proxy(proxy));
-
-        botBuilder.build();
-    }
-
     @Override
     public void loaded() {
+        // Set command prefix
         setCommandPrefix(".");
 
+        // Register commands
         registerCommand(new RainbowCommand());
 
         RainbowController.INSTANCE.initialise(this);
