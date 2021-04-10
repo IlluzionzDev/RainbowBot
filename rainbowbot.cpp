@@ -29,9 +29,6 @@ namespace rainbow {
 
     // Rainbow roles, must be set before doing anything
     std::unordered_map<CDL::CGuild, CDL::Role*> roles;
-
-    // If rainbow is enabled
-    bool enabled = true;
 };
 
 
