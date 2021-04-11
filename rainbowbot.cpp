@@ -81,11 +81,12 @@ class Bot {
 
         // Iterate through all roles
         for (const auto& [guild, role] : rainbow::roles) {
-            role->color = *color;
-            env.bot->call("PATCH", "/guilds/"+std::to_string(guild->id)+"/roles/"+std::to_string(role->id), {{"color", *color}}, [] (const bool, nlohmann::json) {});
+            role->commit(nullptr, {
+                             .color = *color
+                         });
         }
 
-        rainbowTimer = new boost::asio::steady_timer(*env.aioc, 800ms);
+        rainbowTimer = new boost::asio::steady_timer(*env.aioc, 1s);
         rainbowTimer->async_wait([=] (...) {
             rainbowLoop();
         });
