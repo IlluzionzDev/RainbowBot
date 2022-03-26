@@ -1,3 +1,5 @@
+This project is archived as rainbow roles are against Discord TOS [https://twitter.com/discord/status/1055182857709256704?lang=en](https://twitter.com/discord/status/1055182857709256704?lang=en)
+
 # RainbowBot
 
 This is a discord bot which allows you to make roles that change colours (like a rainbow role). This can used for cosmetic or for special people in your server.
